@@ -1,0 +1,14 @@
+.venv/
+__pycache__/
+.pytest_cache/
+*.pyc
+
+# Never commit secrets (pass the API key through an environment variable / Codespaces secret)
+.env
+.env.*
+
+# Personal learning log (created in the Lecture 03 homework) is not shared
+learning_log/
+
+# macOS
+.DS_Store
