@@ -42,7 +42,7 @@ agent = Agent(instructions=INSTRUCTIONS)
 agent.tool_plain(tools.search_glossary)
 agent.tool_plain(tools.get_lecture_summary)
 
-# TODO(Lecture 03 exercise): create make_quiz in tools.py and register it here
+agent.tool_plain(tools.make_quiz)  # Lecture 03 exercise
 
 # Lecture 05: MCP server configuration file. Uses the same "mcpServers" format as Claude Desktop and Cursor
 MCP_CONFIG = Path(__file__).resolve().parent / "mcp_servers.json"
