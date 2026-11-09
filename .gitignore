@@ -12,3 +12,6 @@ learning_log/
 
 # macOS
 .DS_Store
+
+# ADK local session storage (created by adk run / adk web)
+.adk/
