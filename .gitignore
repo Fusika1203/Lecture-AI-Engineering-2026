@@ -3,11 +3,11 @@ __pycache__/
 .pytest_cache/
 *.pyc
 
-# Never commit secrets (pass the API key through an environment variable / Codespaces secret)
+# Do not commit secrets (pass API keys through Codespaces secrets)
 .env
 .env.*
 
-# Personal learning log (created in the Lecture 03 homework) is not shared
+# Do not share personal learning logs (created in Lecture 03 homework)
 learning_log/
 
 # macOS
@@ -15,3 +15,6 @@ learning_log/
 
 # ADK local session storage (created by adk run / adk web)
 .adk/
+
+# Lecture 05: search databases regenerated from the materials
+.cache/rag/

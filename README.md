@@ -32,6 +32,32 @@ uv run python -m app.ask "What is LoRA?"
 
 See [lectures/01/problem.md](lectures/01/problem.md) for detailed instructions.
 
+<a id="lecture-05-retrieval"></a>
+
+## Lecture 05: Search the Lecture Materials
+
+The bundled search database covers 214 pages from the main materials for Lectures 01–03. It reuses the Japanese source vectors and returns translated text. Full context covers 8 documents and 398 pages, including the Lecture 01 and 02 exercises.
+
+See [lectures/05/problem.md](lectures/05/problem.md) for the exercises and homework, and record results in [lectures/05/answer.md](lectures/05/answer.md).
+
+The repository includes `data/rag_data/index.sqlite3`, a search database with embeddings for 214 pages from the main materials for Lectures 01–03. Set `GEMINI_API_KEY` and install the dependencies from the repository root, then try retrieval and answering. Query embedding and answer generation use the API.
+
+```bash
+uv sync --frozen
+uv run python -m app.retrieval "LoRA QLoRA difference"
+uv run python -m app.agent --trace "What is the difference between LoRA and QLoRA?"
+uv run python -m app.agent --graph --trace "What is the difference between LoRA and QLoRA?"
+```
+
+If you change the materials' text or embedding settings, create an experimental database. In a terminal where `AIE_RAG_DB` is set, both index creation and retrieval use that path.
+
+```bash
+export AIE_RAG_DB="$PWD/.cache/rag/custom.sqlite3"
+uv run python -m scripts.build_rag_index
+```
+
+To recreate the same experimental database, add `--rebuild` to the build command. Run `unset AIE_RAG_DB` to return to the bundled database. Tree mode (`--tree`) and full context (`--full-context`) do not need the search database.
+
 ## Structure
 
 ```
@@ -43,12 +69,14 @@ app/
   tools.py       Lecture 03: agent tools (glossary search, etc.)
   agent.py       Lecture 03: Pydantic AI learning support agent (Lecture 06: through MCP with --mcp)
   judge.py       Lecture 04: grade the evaluation set with an LLM and report agreement with human labels
+  retrieval.py   Lecture 05: retrieval, Tree traversal, Graph traversal, and full context for lecture materials
   mcp_server.py  Lecture 06: MCP server that exposes the glossary
   mcp_servers.json Lecture 06: configuration of MCP servers to use (mcpServers format)
 data/
   glossary.json  Course glossary
   lectures/      Key points from each session
   eval/          Lecture 04: evaluation set (lec04_cases.jsonl) and grading rubric (rubric.md)
+  rag_data/      Lecture 05: text (lectures.json), table of contents (tree.json), page/term relationships (graph.json), search database (index.sqlite3)
 tools/
   annotate.py    Lecture 04: interface for labeling the evaluation set (Streamlit; temporarily added with uv run --with)
 .streamlit/      Streamlit configuration for access through Codespaces port forwarding
@@ -56,7 +84,9 @@ lectures/NN/
   problem.md     Exercises and homework for that session
   answer.md      File for you to fill in and submit
 notebooks/       Lecture 02: LoRA notebook for Google Colab (lora_format_tuning.ipynb)
-scripts/         Helper scripts
+scripts/
+  build_rag_index.py Lecture 05: embed materials and build the search database
+  make_sft_dataset.py Lecture 02: prepare training data
 tests/           Tests (no API key required)
 pyproject.toml / uv.lock  Dependencies and their pinned versions
 ```
