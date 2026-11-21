@@ -4,6 +4,7 @@ Usage:
     uv run python -m app.agent "What is the difference between LoRA and QLoRA?"
     uv run python -m app.agent --trace "What is the difference between LoRA and QLoRA?"   # Show tool calls
     uv run python -m app.agent --graph --trace "What is the difference between LoRA and QLoRA?"  # Follow the graph from search results to answer
+    uv run python -m app.agent --graph2 --trace "What is the difference between LoRA and QLoRA?"  # Homework: graph candidates ranked by stored vectors
     uv run python -m app.agent --tree --trace "What is the difference between LoRA and QLoRA?"  # Follow the table of contents to answer
     uv run python -m app.agent --full-context --trace "What is the difference between LoRA and QLoRA?"  # Pass all materials at once
     uv run python -m app.agent --mcp --trace "What is LoRA?"        # Lecture 05: receive tools from MCP servers
@@ -21,7 +22,7 @@ from pathlib import Path
 from contextlib import nullcontext
 from time import perf_counter
 
-from pydantic_ai import Agent
+from pydantic_ai import Agent, Tool
 from pydantic_ai.exceptions import ModelHTTPError
 from fastmcp import Client
 from pydantic_ai.mcp import MCPToolset, StdioTransport
@@ -184,6 +185,7 @@ def main() -> None:
     modes = parser.add_mutually_exclusive_group()
     modes.add_argument("--mcp", action="store_true", help="Lecture 05: receive tools from MCP servers (app/mcp_servers.json)")
     modes.add_argument("--graph", action="store_true", help="Follow the graph from search results and read candidate pages to answer")
+    modes.add_argument("--graph2", action="store_true", help="Homework (Advanced): like --graph, but rank graph candidates by stored page vectors and keep the closest")
     modes.add_argument("--tree", action="store_true", help="Follow the table of contents and read the necessary pages to answer")
     modes.add_argument("--full-context", action="store_true", help="Pass all materials in lectures.json at once, without searching")
     parser.add_argument("--list-tools", action="store_true", help="List tools visible to the model and exit (no API key needed)")
@@ -195,6 +197,10 @@ def main() -> None:
         mode = target.override(instructions=TREE_INSTRUCTIONS, tools=[tools.browse_tree])
     elif args.graph:
         mode = target.override(instructions=GRAPH_INSTRUCTIONS, tools=[tools.search_graph])
+    elif args.graph2:
+        # Same instructions, tool name, and description as --graph; only the retrieval changes
+        mode = target.override(instructions=GRAPH_INSTRUCTIONS,
+                               tools=[Tool(tools.search_graph_v2, name="search_graph")])
     with mode:
         if args.list_tools:
             if args.full_context:

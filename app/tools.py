@@ -152,3 +152,22 @@ def search_graph(query: str) -> str:
         return json.dumps({"error": str(e)}, ensure_ascii=False)
     except APIError as e:
         return json.dumps({"error": api_error_message(e.code)}, ensure_ascii=False)
+
+
+def search_graph_v2(query: str) -> str:
+    """Search the materials, then follow adjacent pages and shared terms to return related page text and citation metadata.
+
+    Use query to specify what you want to look up.
+    """
+    # Homework (Advanced): registered under the name "search_graph" with the same description, so the
+    # model sees the same tool as in --graph. Only the candidate selection in app/retrieval.py differs.
+    import sqlite3
+    from google.genai.errors import APIError
+    from app.retrieval import search_graph_v2 as search
+
+    try:
+        return json.dumps(search(query), ensure_ascii=False)
+    except (ValueError, OSError, sqlite3.Error) as e:
+        return json.dumps({"error": str(e)}, ensure_ascii=False)
+    except APIError as e:
+        return json.dumps({"error": api_error_message(e.code)}, ensure_ascii=False)
